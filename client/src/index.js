@@ -15,6 +15,9 @@ import "bootstrap-icons/font/bootstrap-icons.css"
 // context provider component
 import AuthProvider from './Context/AuthContext';
 
+// custom bootstrap js
+
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

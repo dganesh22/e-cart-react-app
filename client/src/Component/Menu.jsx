@@ -17,6 +17,7 @@ function Menu() {
                 setToken(false)
                 setCurrentUser(false)
                 setLogin(false)
+                localStorage.removeItem("token")
             }).catch(err => toast.error(err.response.data.msg))
         } else {
             toast.warning("logout terminated")

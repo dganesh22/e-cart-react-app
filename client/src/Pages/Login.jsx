@@ -15,7 +15,7 @@ function Login() {
   const navigate = useNavigate()
 
   // creating instance of context -> (consumer)
-  const { setToken,setLogin,setCurrentUser } = useAuth()
+  const { setToken,setLogin,setCurrentUser, verify } = useAuth()
 
   const readvalue = (e) => {
     const { name, value } = e.target
@@ -31,8 +31,8 @@ function Login() {
             .then(res => {
                 toast.success(res.data.msg)
                 setToken(res.data.token)
-                setLogin(true)
                 verify(res.data.token)
+                localStorage.setItem("token", res.data.token) // dev only, comment on production
                 navigate(`/`)
             }).catch(err => {
               toast.error(err.response.data.msg)
@@ -45,20 +45,7 @@ function Login() {
       }
   }
 
-  // verify user token
-  const verify=  async (token) => {
-      await axios.get(`/api/auth/verify/user`, {
-         headers: {
-          'Authorization': token
-         }
-      }).then(res => {
-          toast.success(res.data.msg)
-          setCurrentUser(res.data.user)
-      }).catch(err => {
-        toast.error(err.response.data.msg)
-        setCurrentUser(false)
-      })
-  } 
+  
   
   return (
     <div className="container d-flex align-items-center justify-content-center" style={{ height: '100vh'}}>

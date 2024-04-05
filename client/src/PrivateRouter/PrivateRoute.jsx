@@ -12,7 +12,8 @@ function PrivateRoute() {
   return (
     <>
         { 
-            contextToken?.token && contextToken?.login ? <Outlet/> : <Navigate to={`/login`} />
+            contextToken?.token || contextToken?.login ? <Outlet/> : <Navigate to={`/login`} />
+            // contextToken?.token && contextToken?.login ? <Outlet/> : <Navigate to={`/login`} />
         }
     </>
   )
