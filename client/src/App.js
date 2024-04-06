@@ -16,6 +16,7 @@ import AdminProducts from './Pages/Dashboard/Admin/Products/AdminProducts'
 import AdminOrders from './Pages/Dashboard/Admin/Orders/AdminOrders'
 import AdminCategory from './Pages/Dashboard/Admin/Category/AdminCategory'
 import AdminUsers from './Pages/Dashboard/Admin/Users/AdminUsers'
+import NewProduct from './Pages/Dashboard/Admin/Products/NewProduct'
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
                       <Route path={`user`} element={<UserDashboard/>} />
                       <Route path={`superadmin`} element={<AdminDashboard/>}>
                           <Route path={`products`} element={<AdminProducts/>} />
+                          <Route path={`products/new`} element={<NewProduct/>} />
                           <Route path={`orders`} element={<AdminOrders/>} />
                           <Route path={`categories`} element={<AdminCategory/>} />
                           <Route path={`users`} element={<AdminUsers/>} />
