@@ -53,7 +53,7 @@ function AdminProducts() {
                                    <td> { item.category} </td>
                                    <td> { item.SKU } </td>
                                    <td>
-                                      <NavLink className="btn btn-sm btn-info me-3">
+                                      <NavLink to={`update/${item._id}`} className="btn btn-sm btn-info me-3">
                                           <i className="bi bi-pencil"></i>
                                       </NavLink>
                                       <button className="btn btn-sm btn-danger">

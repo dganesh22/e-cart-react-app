@@ -5,6 +5,7 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const { StatusCodes } = require('http-status-codes')
 const dbConnect = require('./db/connect')
+const fileUpload = require('express-fileupload')
 
 const PORT = process.env.PORT
 
@@ -15,6 +16,12 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cors())
 app.use(cookieParser(process.env.ACCESS_SECRET)) // secure cookies
+app.use(fileUpload({
+    useTempFiles: true,
+    limits: {
+        fileSize: 5 *1024 *1024 // image file size upto 5Mb
+    }
+}))
 
 // inital route
 app.get(`/`, async (req,res) => {
@@ -27,6 +34,7 @@ app.use(`/api/category`, require('./route/categoryRoute'))
 app.use(`/api/product`, require('./route/productRoute'))
 app.use(`/api/cart`, require('./route/cartRoute'))
 app.use(`/api/order`, require('./route/orderRoute'))
+app.use(`/api/file`, require('./route/fileRoute'))
 
 
 // default route

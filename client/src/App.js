@@ -17,6 +17,9 @@ import AdminOrders from './Pages/Dashboard/Admin/Orders/AdminOrders'
 import AdminCategory from './Pages/Dashboard/Admin/Category/AdminCategory'
 import AdminUsers from './Pages/Dashboard/Admin/Users/AdminUsers'
 import NewProduct from './Pages/Dashboard/Admin/Products/NewProduct'
+import ProductsHome from './Pages/Products/ProductsHome'
+import ProductDetails from './Pages/Products/ProductDetails'
+import UpdateProduct from './Pages/Dashboard/Admin/Products/UpdateProduct'
 
 
 function App() {
@@ -31,13 +34,17 @@ function App() {
                       <Route path={`superadmin`} element={<AdminDashboard/>}>
                           <Route path={`products`} element={<AdminProducts/>} />
                           <Route path={`products/new`} element={<NewProduct/>} />
+                          <Route path={`products/update/:id`} element={<UpdateProduct/>} />
                           <Route path={`orders`} element={<AdminOrders/>} />
                           <Route path={`categories`} element={<AdminCategory/>} />
                           <Route path={`users`} element={<AdminUsers/>} />
                       </Route>
                    </Route>
             </Route>
-              <Route path={`/`} element={<Home/>} />
+              <Route path={`/`} element={<Home/>}>
+                  <Route path={`/`} element={<ProductsHome/>} />
+                  <Route path={`/product/:id`} element={<ProductDetails/>} />
+              </Route>
               <Route path={`/about`} element={<About/>} />
               <Route path={`/contact`} element={<Contact/>} />
               <Route path={`/login`} element={<Login/>} />
