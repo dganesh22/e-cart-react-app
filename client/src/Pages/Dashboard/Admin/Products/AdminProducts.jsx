@@ -47,7 +47,7 @@ function AdminProducts() {
                                 <tr className='text-center' key={index}>
                                    <td> { item.title} </td>
                                    <td> 
-                                        <img src={item?.image.path} alt="" width={100} height={100} className="img-fluid" />
+                                        <img src={`/uploads/${item?.image}`} alt="" width={100} height={100} className="img-fluid" />
                                     </td>
                                    <td> { item.price} </td>
                                    <td> { item.category} </td>

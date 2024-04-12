@@ -1,17 +1,36 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { useParams, useNavigate } from 'react-router-dom'
 
 function UpdateProduct() {
     const [title,setTitle] = useState('')
-    const [image,setImage] = useState('https://t4.ftcdn.net/jpg/01/64/16/59/360_F_164165971_ELxPPwdwHYEhg4vZ3F4Ej7OmZVzqq4Ov.jpg')
+    const [image,setImage] = useState('')
     const [desc,setDesc] = useState('')
     const [price,setPrice] = useState(0)
     const [SKU,setSKU] = useState('')
     const [category,setCategory] = useState('')
     const [discount,setDiscount] = useState(0.0)
 
+    const [loading,setLoading] = useState(false)
+
     const [categories,setCategories] =  useState([])
+
+    const params = useParams()
+    const navigate = useNavigate()
+
+    // read single product info
+    const readInit = async () => {
+        await axios.get(`/api/product/single/${params.id}`)
+            .then(res => {
+                setTitle(res.data.product.title)
+                setDesc(res.data.product.desc)
+                setPrice(res.data.product.price)
+                setCategory(res.data.product.category)
+                setImage(res.data.product.image)
+            }).catch(err => toast.error(err.response.data.msg))
+    }
+
 
     // read all categories
     const readAllCat = async () => {
@@ -27,8 +46,38 @@ function UpdateProduct() {
 
     useEffect(() => {
         readAllCat()
+        readInit()
     },[])
     
+
+    const imageHandler = async (e) => {
+        e.preventDefault()
+        try {
+            let file = e.target.files[0]
+            console.log(`file data=`, file)
+
+            let formData = new FormData()
+            formData.append('thumbnail', file)
+
+            setLoading(true)
+             await axios.post(`/api/file/upload/?product=${params.id}`, formData, {
+                headers: {
+                    'Content-Type':'multipart/form-data'
+                }
+             })
+                .then(res => {
+                    setLoading(false)
+                    toast.success(res.data.msg)
+                    setImage(res.data.file)
+                }).catch(err => {
+                    toast.error(err.response.data.msg)
+                    setLoading(false)
+                })
+
+        }catch(err) {
+            toast.error(err.message)
+        }
+    }
 
   return (
     <div className='container'>
@@ -41,35 +90,49 @@ function UpdateProduct() {
             <div className="col-md-6">
                 <div className="form-group mt-2">
                     <label htmlFor="title">Title</label>
-                    <input type="text" name="title" id="title" className="form-control" required />
+                    <input type="text" name="title" value={title} onChange={(e) => setTitle(e.target.value)} id="title" className="form-control" required />
                 </div>
                 <div className="form-group mt-2">
                     <label htmlFor="">Product Image</label>
-                    <label htmlFor="image">
-                        <input type="file" name="image" id="image" className="form-control" required hidden />
-                        <div className="card">
-                            <img src={image ? image : ''} alt="no image" height={400} className="card-img-top" />
-                        </div>
-                    </label>
+                    <br />
+                   {
+                        image === "" ? (
+                            <label htmlFor="image">
+                                {
+                                    loading ? (
+                                        <div className="spinner-border text-theme" style={{ width: '4rem',height: '4rem'}} role={'status'}>
+                                            <span className="visually-hidden">Loading...</span>
+                                        </div>
+                                    ): (
+                                        <input type="file" name="image" onChange={imageHandler} id="image" className="form-control" required />
+                                    )
+                                }
+                             </label>
+                        ) : (
+                            <div className="card d-flex justify-content-center">
+                                <img src={image ? `/uploads/${image}` : ''} alt="no pic" className="card-img-top" style={{ width:'45%'}} />
+                            </div>
+                        )
+                   }
                 </div>
              
             </div>
             <div className="col-md-6">
                 <div className="form-group mt-2">
                     <label htmlFor="desc">Description</label>
-                    <textarea name="desc" id="desc" cols="30" rows="5" className="form-control" required></textarea>
+                    <textarea name="desc" value={desc} onChange={(e) => setDesc(e.target.value)} id="desc" cols="30" rows="5" className="form-control" required></textarea>
                 </div>
                 <div className="form-group mt-2">
                     <label htmlFor="price">Price</label>
-                    <input type="number" name="price" id="price" className="form-control" required />
+                    <input type="number" name="price" value={price} onChange={(e) => setPrice(e.target.value)} id="price" className="form-control" required />
                 </div>
                 <div className="form-group mt-2">
                     <label htmlFor="SKU">SKU</label>
-                    <input type="text" name="SKU" id="SKU" className="form-control" required />
+                    <input type="text" name="SKU" value={SKU} onChange={(e) => setSKU(e.target.value)} id="SKU" className="form-control" required />
                 </div>
                 <div className="form-group mt-2">
                     <label htmlFor="category">Category</label>
-                    <select name="category" id="category" className="form-select">
+                    <select name="category" value={category} onChange={(e) => setCategory(e.target.value)} id="category" className="form-select">
                         <option value="null">Choose Product Category</option>
                         {
                             categories && categories.map((item,index) => {
@@ -82,7 +145,7 @@ function UpdateProduct() {
                 </div>
                 <div className="form-group mt-2">
                     <label htmlFor="discount">Discount</label>
-                    <input type="number" name="discount" id="discount" className="form-control" required />
+                    <input type="number" name="discount" value={discount} onChange={(e) => setDiscount(e.target.value)} id="discount" className="form-control" required />
                 </div>
                 <div className="form-group mt-2">
                     <button className="btn btn-success">Update Product</button>

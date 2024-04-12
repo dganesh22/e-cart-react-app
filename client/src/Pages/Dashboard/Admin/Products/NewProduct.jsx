@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 function NewProduct() {
     const [title,setTitle] = useState('')
@@ -10,6 +11,9 @@ function NewProduct() {
 
     // all categories
     const [categories,setCategories] =  useState([])
+
+    // create navigate instance
+    const navigate = useNavigate()
 
     // read all categories
     const readAllCat = async () => {
@@ -37,6 +41,11 @@ function NewProduct() {
                 price
             }
             console.log(`product =`,data)
+            await axios.post(`/api/product/add`,data)
+                .then(res => {
+                    toast.success(res.data.msg)
+                    navigate(`/dashboard/superadmin/products/update/${res.data.product._id}`)
+                }).catch(err => toast.error(err.response.data.msg))
         } catch (error) {
             toast.error(error.message)
         }

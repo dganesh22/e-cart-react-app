@@ -25,7 +25,7 @@ function ProductDetails() {
         <div className="row">
                 <div className="col-md-4 col-lg-4 col-sm-6">
                     <div className="card">
-                        <img src={ product?.image ?  product?.image?.path : `${process.env.PUBLIC_HOME}/${product?.image?.name}` } alt="no pic" className="card-img-top" />
+                        <img src={ product?.image ?  `/uploads/${product?.image}` : `` } alt="no pic" className="card-img-top" />
                     </div>
                 </div>
                 <div className="col-md-8 col-lg-8 col-sm-6">

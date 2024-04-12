@@ -8,10 +8,9 @@ const ProductSchema = new mongoose.Schema(
             trim: true
         },
         image: {
-            type: Object,
-            default: {
-                path: "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"
-            }
+            type: String,
+            default: ""
+            
         },
         desc: {
             type: String,

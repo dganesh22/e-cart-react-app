@@ -27,7 +27,8 @@ const uploadImage = async (req,res) => {
             }
 
             // rename the file
-        let newFile = thumbnail.name
+        let ext = path.extname(thumbnail.name)
+        let newFile = `${extPro.title}${ext}`  // productitle.jpg
 
             // file already exists in the location or not
         let filePath = path.join(__dirname, "../client/public/uploads", `${newFile}`) 
@@ -51,7 +52,7 @@ const uploadImage = async (req,res) => {
 
             if(req.query.product) {
                  // update the product collection
-                await Product.findByIdAndUpdate({ _id: product }, {image: thumbnail})
+                await Product.findByIdAndUpdate({ _id: product }, {image: newFile })
             }
 
             return res.status(StatusCodes.CREATED).json({ status: true, msg: "File uploaded successfully", file: thumbnail })
@@ -85,7 +86,7 @@ const deleteImage = async (req,res) => {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ status: false, msg: err})
 
               // update the product collection
-              await Product.findByIdAndUpdate({ _id: product }, {image: { path: "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"}})
+              await Product.findByIdAndUpdate({ _id: product }, {image:  "https://st4.depositphotos.com/14953852/24787/v/450/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg"})
 
             return res.status(StatusCodes.ACCEPTED).json({ status: true, msg: `File deleted successfully`})
         })
