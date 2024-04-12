@@ -4,13 +4,11 @@ import { toast } from 'react-toastify'
 
 function NewProduct() {
     const [title,setTitle] = useState('')
-    const [image,setImage] = useState('https://t4.ftcdn.net/jpg/01/64/16/59/360_F_164165971_ELxPPwdwHYEhg4vZ3F4Ej7OmZVzqq4Ov.jpg')
     const [desc,setDesc] = useState('')
-    const [price,setPrice] = useState(0)
-    const [SKU,setSKU] = useState('')
     const [category,setCategory] = useState('')
-    const [discount,setDiscount] = useState(0.0)
+    const [price,setPrice] = useState(0)
 
+    // all categories
     const [categories,setCategories] =  useState([])
 
     // read all categories
@@ -28,6 +26,21 @@ function NewProduct() {
     useEffect(() => {
         readAllCat()
     },[])
+
+    const submitHandler = async (e) => {
+        e.preventDefault()
+        try {
+            let data = {
+                title,
+                desc,
+                category,
+                price
+            }
+            console.log(`product =`,data)
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
     
 
   return (
@@ -41,35 +54,15 @@ function NewProduct() {
             <div className="col-md-6">
                 <div className="form-group mt-2">
                     <label htmlFor="title">Title</label>
-                    <input type="text" name="title" id="title" className="form-control" required />
+                    <input type="text" name="title" value={title} onChange={(e) => setTitle(e.target.value)} id="title" className="form-control" required />
                 </div>
-                <div className="form-group mt-2">
-                    <label htmlFor="">Product Image</label>
-                    <label htmlFor="image">
-                        <input type="file" name="image" id="image" className="form-control" required hidden />
-                        <div className="card">
-                            <img src={image ? image : ''} alt="no image" height={400} className="card-img-top" />
-                        </div>
-                    </label>
-                </div>
-             
-            </div>
-            <div className="col-md-6">
                 <div className="form-group mt-2">
                     <label htmlFor="desc">Description</label>
-                    <textarea name="desc" id="desc" cols="30" rows="5" className="form-control" required></textarea>
-                </div>
-                <div className="form-group mt-2">
-                    <label htmlFor="price">Price</label>
-                    <input type="number" name="price" id="price" className="form-control" required />
-                </div>
-                <div className="form-group mt-2">
-                    <label htmlFor="SKU">SKU</label>
-                    <input type="text" name="SKU" id="SKU" className="form-control" required />
+                    <textarea name="desc" value={desc} onChange={(e) => setDesc(e.target.value)} id="desc" cols="30" rows="5" className="form-control" required></textarea>
                 </div>
                 <div className="form-group mt-2">
                     <label htmlFor="category">Category</label>
-                    <select name="category" id="category" className="form-select">
+                    <select name="category" value={category} onChange={(e) => setCategory(e.target.value)} id="category" className="form-select">
                         <option value="null">Choose Product Category</option>
                         {
                             categories && categories.map((item,index) => {
@@ -80,12 +73,14 @@ function NewProduct() {
                         }
                     </select>
                 </div>
+
                 <div className="form-group mt-2">
-                    <label htmlFor="discount">Discount</label>
-                    <input type="number" name="discount" id="discount" className="form-control" required />
+                    <label htmlFor="price">Price</label>
+                    <input type="number" name="price" value={price} onChange={(e) => setPrice(e.target.value)} id="price" className="form-control" required />
                 </div>
+                
                 <div className="form-group mt-2">
-                    <button className="btn btn-success">Add Product</button>
+                    <button onClick={submitHandler} className="btn btn-success">Add Product</button>
                 </div>
             </div>
         </div>

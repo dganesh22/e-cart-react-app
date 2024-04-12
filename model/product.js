@@ -20,11 +20,11 @@ const ProductSchema = new mongoose.Schema(
         },
         price:{
             type: Number,
-            required:true
+            default: 0
         },
         SKU: {  // stock keeping unit
             type: String,
-            required: true
+            default: ""
         },
         category: {
             type: String,
