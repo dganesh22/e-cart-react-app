@@ -3,10 +3,13 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../Hooks/authHook'
 import { toast } from 'react-toastify'
 import axios from 'axios'
+import useCart from '../Hooks/cartHook'
 
 function Menu() {
     const { contextToken, setToken,setCurrentUser,setLogin } = useAuth()
     const navigate = useNavigate()
+
+    const {cart, removeFromCart, increment,decrement } = useCart()
 
     const logout = async () => {
         if(window.confirm(`Are you sure to logout?`)) {
@@ -28,15 +31,20 @@ function Menu() {
     <header>
           <nav className="navbar navbar-expand-md navbar-dark bg-theme fixed-top">
               <div className="container">
-                  <NavLink to={`/`} className="navbar-brand">MERN-Project</NavLink>
+                   <div className='d-flex align-items-center'>
+                        <button className="btn btn-secondary" data-bs-target="#menu" data-bs-toggle="offcanvas">
+                            <i className="bi bi-list"></i>
+                        </button>
+                        <NavLink to={`/`} className="navbar-brand ms-3">MERN-Project</NavLink>
+                   </div>
 
-                  <button className="btn btn-secondary" data-bs-target="#menu" data-bs-toggle="offcanvas">
-                      <i className="bi bi-list"></i>
-                  </button>
+                  <span className="link" data-bs-target="#cart" data-bs-toggle="offcanvas">
+                      <i className="bi bi-cart text-light"></i>
+                  </span>
               </div>
           </nav>
       {/* offcanvas menu */}
-          <div className="offcanvas offcanvas-end" tabIndex={'-1'} id='menu'>
+          <div className="offcanvas offcanvas-start" tabIndex={'-1'} id='menu'>
               <div className="offcanvas-header">
                   <h6 className="text-dark display-6 offcanvas-title">MERN-Project</h6>
                   <button data-bs-dismiss="offcanvas" className="btn-close"/>
@@ -63,6 +71,52 @@ function Menu() {
                         </div>
                     )
                  }
+              </div>
+          </div>
+
+           {/* cart offcanvas menu */}
+           <div className="offcanvas offcanvas-end" tabIndex={'-1'} id='cart'>
+              <div className="offcanvas-header">
+                  <h6 className="text-dark offcanvas-title"> <i className="bi bi-cart"></i> Your Cart</h6>
+                  <button data-bs-dismiss="offcanvas" className="btn-close"/>
+              </div>
+              <div className="offcanvas-body">
+                 <ul className="list-group border-0">
+                     {
+                        (cart.length === 0) ? 
+                                <li className="list-group-item border-0 d-flex justify-content-between align-items-center">
+                                    <span className="text-dark">Cart is empty</span>
+                                    <span className="text-dark"> &#8377;0</span>
+                                </li>
+                        : null
+                     }
+                     {
+                        cart && cart.map((item,index) => {
+                            return (
+                                <li className="list-group-item d-flex" key={index}>
+                                    <div className="img">
+                                        <img src={`/uploads/${item?.image}`} alt={item.name} width={60} height={60} />
+                                    </div>
+                                     <div className="w-100">
+                                        <span className="float-end text-danger link" onClick={() => removeFromCart(item._id)} > 
+                                        <i className="bi bi-trash"></i> </span>
+                                        <div>
+                                            <h6 className="mb-1">{item?.title}</h6>
+                                            <small> &#8377; {item?.price}</small>
+                                        </div>
+                                        <small className="text-muted float-end">Quantity:  
+                                            <span className='ms-3'>
+                                                <i onClick={()=> decrement(item)} className="bi bi-dash-circle link text-danger"></i>
+                                                <strong> {item?.quantity ||  1} </strong>
+                                                <i onClick={()=> increment(item)} className="bi bi-plus-circle text-success link"></i>
+                                            </span>
+                                         </small>
+                                     </div>
+                                </li>
+                            )
+                        })
+                     }
+                 </ul>
               </div>
           </div>
     </header>

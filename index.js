@@ -35,6 +35,7 @@ app.use(`/api/product`, require('./route/productRoute'))
 app.use(`/api/cart`, require('./route/cartRoute'))
 app.use(`/api/order`, require('./route/orderRoute'))
 app.use(`/api/file`, require('./route/fileRoute'))
+app.use(`/api/user`, require('./route/userRoute'))
 
 
 // default route

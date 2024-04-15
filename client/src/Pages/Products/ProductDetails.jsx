@@ -3,10 +3,12 @@ import { useParams } from "react-router-dom"
 import axios from 'axios'
 import { toast } from "react-toastify"
 import { useAuth } from '../../Hooks/authHook'
+import useCart from '../../Hooks/cartHook'
 
 function ProductDetails() {
     const [product,setProduct] = useState(false)
     const { contextToken } = useAuth()
+    const  { addToCart } = useCart()
 
     const params = useParams() // to read router params
 
@@ -43,7 +45,7 @@ function ProductDetails() {
                             </div>
 
                            {
-                            contextToken?.currentUser?.role === "superadmin" ? null :  <button className="btn btn-success mt-5">Add To Cart</button>
+                            contextToken?.currentUser?.role === "superadmin" ? null :  <button className="btn btn-success mt-5" onClick={() => addToCart(product)}>Add To Cart</button>
                            }
                         </div>
                     </div>

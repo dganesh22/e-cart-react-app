@@ -14,6 +14,7 @@ import "bootstrap-icons/font/bootstrap-icons.css"
 
 // context provider component
 import AuthProvider from './Context/AuthContext';
+import CartProvider from './Context/CartContext';
 
 // custom bootstrap js
 
@@ -22,7 +23,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <AuthProvider>
-        <App/>
+        <CartProvider>
+            <App/>
+        </CartProvider>
     </AuthProvider>
   </React.StrictMode>
 );

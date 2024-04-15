@@ -29,3 +29,7 @@ code {
 .no-link {
   text-decoration: none;
 }
+
+.link {
+  cursor: pointer;
+}

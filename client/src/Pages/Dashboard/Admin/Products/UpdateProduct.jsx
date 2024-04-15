@@ -28,6 +28,8 @@ function UpdateProduct() {
                 setPrice(res.data.product.price)
                 setCategory(res.data.product.category)
                 setImage(res.data.product.image)
+                setDiscount(res.data.product.discount)
+                setSKU(res.data.product.SKU)
             }).catch(err => toast.error(err.response.data.msg))
     }
 
@@ -49,7 +51,7 @@ function UpdateProduct() {
         readInit()
     },[])
     
-
+    // to uploadin image to server
     const imageHandler = async (e) => {
         e.preventDefault()
         try {
@@ -69,12 +71,55 @@ function UpdateProduct() {
                     setLoading(false)
                     toast.success(res.data.msg)
                     setImage(res.data.file)
+                    window.location.reload()
                 }).catch(err => {
                     toast.error(err.response.data.msg)
                     setLoading(false)
                 })
 
         }catch(err) {
+            toast.error(err.message)
+        }
+    }
+
+    //delete image
+    const deleteImage = async (e) => {
+        e.preventDefault()
+        try {
+            if(window.confirm(`Are you sure to delete an image?`)) {
+                await axios.delete(`/api/file/delete?product=${params.id}`)
+               .then(res => {
+                    toast.success(res.data.msg)
+                    setImage('')
+                }).catch(err => {
+                    toast.error(err.response.data.msg)
+                })
+            }
+        }catch(err) {
+            toast.error(err.message)
+        }
+    }
+
+    // update the data
+    const submitHandler = async (e) => {
+        e.preventDefault()
+        try {
+            let data  = {
+                title,
+                desc,
+                category,
+                price,
+                SKU,
+                discount,
+                image
+            }
+
+             await axios.patch(`/api/product/update/${params.id}`,data)
+                .then(res => {
+                    toast.success(res.data.msg)
+                    navigate(`/dashboard/superadmin/products`)
+                }).catch(err => toast.error(err.response.data.msg))
+        } catch (err) {
             toast.error(err.message)
         }
     }
@@ -109,7 +154,10 @@ function UpdateProduct() {
                                 }
                              </label>
                         ) : (
-                            <div className="card d-flex justify-content-center">
+                            <div className="card position-relative">
+                                <button onClick={deleteImage} className="btn btn-sm btn-danger position-absolute top-0 start-100 translate-middle">
+                                    <i className="bi bi-x-circle"></i>
+                                </button>
                                 <img src={image ? `/uploads/${image}` : ''} alt="no pic" className="card-img-top" style={{ width:'45%'}} />
                             </div>
                         )
@@ -148,7 +196,7 @@ function UpdateProduct() {
                     <input type="number" name="discount" value={discount} onChange={(e) => setDiscount(e.target.value)} id="discount" className="form-control" required />
                 </div>
                 <div className="form-group mt-2">
-                    <button className="btn btn-success">Update Product</button>
+                    <button onClick={submitHandler} className="btn btn-success">Update Product</button>
                 </div>
             </div>
         </div>
