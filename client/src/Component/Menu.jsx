@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../Hooks/authHook'
 import { toast } from 'react-toastify'
@@ -7,9 +7,13 @@ import useCart from '../Hooks/cartHook'
 
 function Menu() {
     const { contextToken, setToken,setCurrentUser,setLogin } = useAuth()
+    const {cart, total, tax,discount,final,shipping, removeFromCart, increment,decrement } = useCart()
+
+    const [coupon,setCoupon] = useState('')
+
     const navigate = useNavigate()
 
-    const {cart, removeFromCart, increment,decrement } = useCart()
+
 
     const logout = async () => {
         if(window.confirm(`Are you sure to logout?`)) {
@@ -80,8 +84,8 @@ function Menu() {
                   <h6 className="text-dark offcanvas-title"> <i className="bi bi-cart"></i> Your Cart</h6>
                   <button data-bs-dismiss="offcanvas" className="btn-close"/>
               </div>
-              <div className="offcanvas-body">
-                 <ul className="list-group border-0">
+              <div className="offcanvas-body position-relative p-3">
+                 <ul className="list-group border-0 h-50" style={{overflowY: 'auto'}}>
                      {
                         (cart.length === 0) ? 
                                 <li className="list-group-item border-0 d-flex justify-content-between align-items-center">
@@ -117,6 +121,63 @@ function Menu() {
                         })
                      }
                  </ul>
+
+                 <div className="card position-absolute start-0 bottom-0 w-100 border-0 ms-0">
+                     <div className="card-header border-0">
+                        <h5 className="card-title text-theme">Cart-Total</h5>
+                     </div>
+                     <div className="card-body">
+                        <ul className="list-group">
+                            <li className="list-group-item">
+                                <div className="d-flex justify-content-between">
+                                    <strong className="text-secondary">Coupon: </strong>
+                                    {
+                                        coupon ? <strong className="float-end text-secondary"> { coupon } </strong> : 
+                                         ''
+                                    }
+                                </div>
+                            </li>
+                            <li className="list-group">
+                                <div className="form-group mt-3 mb-2">
+                                <label className="text-secondary">Enter Coupon Code Here</label>
+                                           <div className="input-group">
+                                                <input type="text"  name="coupon" value={coupon} onChange={(e) => setCoupon(e.target.value)} id="coupon" className="form-control" required  />
+                                                <button className="btn btn-success">
+                                                    <i className="bi bi-plus-circle"></i>
+                                                </button>
+                                           </div>
+                                        </div>
+                            </li>
+
+                            <li className="list-group">
+                                <div>
+                                    <strong className="text-secondary">SubTotal</strong>
+                                     <strong className="float-end text-success"> &#8377; { total ? total.toFixed(2): 0 } </strong>
+                                </div>
+                                <div>
+                                    <strong className="text-secondary">Shipping</strong>
+                                     <strong className="float-end text-success"> &#8377; { shipping ? shipping.toFixed(2): 0 } </strong>
+                                </div>
+                                <div>
+                                    <strong className="text-secondary">Tax (CGST+SGST) </strong>
+                                     <strong className="float-end text-success"> &#8377; { tax ? tax.toFixed(2): 0 } </strong>
+                                </div>
+                                <div>
+                                    <strong className="text-secondary">Discount </strong>
+                                     <strong className="float-end text-danger"> &#8377; { discount ? discount.toFixed(2): 0 } </strong>
+                                </div>
+                                <hr />
+                                <div>
+                                    <strong className="text-theme">Total</strong>
+                                     <strong className="float-end text-theme"> &#8377; { final ? final.toFixed(2): 0 } </strong>
+                                </div>
+                            </li>
+                        </ul>
+                     </div>
+                     <div className="card-footer">
+                         <NavLink className="btn btn-theme float-end">Checkout</NavLink>
+                     </div>
+                 </div>
               </div>
           </div>
     </header>

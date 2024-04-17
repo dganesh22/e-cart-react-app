@@ -1,4 +1,4 @@
-import React, { createContext, useCallback , useState } from 'react'
+import React, { createContext, useCallback , useEffect, useState } from 'react'
 import axios from 'axios'
 import {toast} from 'react-toastify'
 import { useAuth } from '../Hooks/authHook'
@@ -8,6 +8,39 @@ export const CartContext = createContext()
 function CartProvider(props) {
     const { currentUser } = useAuth()
     const [cart,setCart] = useState([])
+    const [shipping,setShipping] =  useState(0)
+    const [tax,setTax] = useState(0)
+    const [discount,setDiscount] = useState(0)
+    const [final,setFinal] = useState(0)
+
+    // item total amount 
+    const [total, setTotal] = useState(0)
+
+    useEffect(() => {
+        let totalAmount = cart.reduce((acc,item) => {
+            return acc + item.price * item.quantity
+        }, 0)
+        setTotal(totalAmount)
+    },[cart])
+
+    useEffect(() => {
+        let sh = cart.reduce((acc,item) => {
+            return(( acc + item.price * item.quantity) * (3/100))
+        }, 0)
+        setShipping(sh)
+    },[cart,shipping])
+
+    useEffect(() => {
+        let ds = cart.reduce((acc,item) => {
+            return(( acc + item.price * item.quantity) * (item.discount/100))
+        }, 0)
+        setDiscount(ds)
+    },[cart,discount])
+
+    useEffect(() => {
+        let finalTotal = (total + tax + shipping) - discount 
+        setFinal(finalTotal)
+    },[final,total,tax,shipping,discount])
 
     // increment quantity
     const increment = useCallback((product) =>{
@@ -29,9 +62,15 @@ function CartProvider(props) {
     const addToCart = useCallback((product) => {
         const newCart = [...cart]
         let data = {...product, quantity: 1}
-        newCart.push(data)
-        setCart(newCart)
-        toast.success('product added to cart successfully')
+         // check if the item already exists in the cart
+            let cartItem = newCart.find(item => item._id === product._id)
+            if(cartItem) {
+                toast.warning(`Prodduct already exists in cart`)
+            } else {
+                newCart.push(data)
+                setCart(newCart)
+                toast.success(`Product added to cart`)
+            }
     },[cart])
 
     // remove from cart
@@ -69,7 +108,7 @@ function CartProvider(props) {
 
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, increment, decrement }}>
+    <CartContext.Provider value={{ cart, total,tax,discount,final,shipping, addToCart, removeFromCart, increment, decrement }}>
         {
             props.children
         }
