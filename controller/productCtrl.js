@@ -6,7 +6,7 @@ const Product = require('../model/product')
 const createProduct = async (req,res) => {
     try {
 
-        const { title, image, desc,price, SKU, category, discount } = req.body
+        const { title, image, desc,price, SKU, category, discount, tax } = req.body
 
         // check the product exists or not
         let extPro = await Product.findOne({title})
@@ -21,7 +21,8 @@ const createProduct = async (req,res) => {
             price,
             SKU,
             category,
-            discount
+            discount,
+            tax
         })
 
         res.status(StatusCodes.CREATED).json({ status: true, msg: "product created successfully", product: newProduct })

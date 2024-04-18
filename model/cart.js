@@ -3,12 +3,32 @@ const User = require('./user')
 
 const CartSchema = new mongoose.Schema({
     user: {
-        type: mongoose.Schema.ObjectId,
-        ref: User
+        type: Object,
+        default: {}
     },
     products: {
         type: Array,
         default: []
+    },
+    shipping: {
+        type: Number,
+        default: 0
+    },
+    tax: {
+        type: Number,
+        default: 0
+    },
+    discount: {
+        type: Number,
+        default: 0
+    },
+    total: {
+        type: Number,
+        default: 0
+    },
+    final: {
+        type: Number,
+        default: 0
     }
 },{
     collection: "cart",

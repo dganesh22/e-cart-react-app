@@ -6,21 +6,23 @@ import { useAuth } from '../Hooks/authHook'
 export const CartContext = createContext()
 
 function CartProvider(props) {
-    const { currentUser } = useAuth()
-    const [cart,setCart] = useState([])
-    const [shipping,setShipping] =  useState(0)
+    const { contextToken } = useAuth()
+    const [cart,setCart] = useState(localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [])
+    const [shipping,setShipping]= useState(localStorage.getItem("shipping")?Number(localStorage.getItem("shipping")):0)
     const [tax,setTax] = useState(0)
-    const [discount,setDiscount] = useState(0)
-    const [final,setFinal] = useState(0)
+    const [discount,setDiscount] = useState(localStorage.getItem("discount")? Number(localStorage.getItem("discount")):0)
+    const [final,setFinal] = useState(localStorage.getItem("final")? Number(localStorage.getItem("final")):0);
 
     // item total amount 
-    const [total, setTotal] = useState(0)
+    const [total, setTotal] = useState(localStorage.getItem("total")? Number(localStorage.getItem("total")):0);
+
 
     useEffect(() => {
         let totalAmount = cart.reduce((acc,item) => {
             return acc + item.price * item.quantity
         }, 0)
         setTotal(totalAmount)
+        localStorage.setItem('total', totalAmount)
     },[cart])
 
     useEffect(() => {
@@ -28,6 +30,7 @@ function CartProvider(props) {
             return(( acc + item.price * item.quantity) * (3/100))
         }, 0)
         setShipping(sh)
+        localStorage.setItem('shipping', sh)
     },[cart,shipping])
 
     useEffect(() => {
@@ -35,12 +38,19 @@ function CartProvider(props) {
             return(( acc + item.price * item.quantity) * (item.discount/100))
         }, 0)
         setDiscount(ds)
+        localStorage.setItem('discount', ds)
     },[cart,discount])
 
     useEffect(() => {
         let finalTotal = (total + tax + shipping) - discount 
         setFinal(finalTotal)
+        localStorage.setItem('final', finalTotal)
     },[final,total,tax,shipping,discount])
+
+    // store cart data in localstorage
+    const storeData = (data) => {
+        localStorage.setItem("cart",JSON.stringify(data))
+    }
 
     // increment quantity
     const increment = useCallback((product) =>{
@@ -48,14 +58,22 @@ function CartProvider(props) {
         const index = newCart.findIndex(item => item._id === product._id)
         newCart[index].quantity++
         setCart(newCart)
+        storeData(newCart)
     },[cart])
 
     // decrement quantity
     const decrement = useCallback((product) =>{
         const newCart = [...cart]
         const index = newCart.findIndex(item => item._id === product._id)
+       if (newCart[index].quantity <= 1) {
+           newCart.splice(index,1)
+           setCart(newCart)
+           storeData(newCart)
+       } else {
         newCart[index].quantity--
         setCart(newCart)
+        storeData(newCart)
+       }
     },[cart])
 
     // add to cart
@@ -69,6 +87,7 @@ function CartProvider(props) {
             } else {
                 newCart.push(data)
                 setCart(newCart)
+                storeData(newCart)
                 toast.success(`Product added to cart`)
             }
     },[cart])
@@ -79,15 +98,17 @@ function CartProvider(props) {
         const index = newCart.findIndex(item => item._id === product._id)
         newCart.splice(index,1)
         setCart(newCart)
+        storeData(newCart)
         toast.success('product removed from cart successfully')
     },[cart])
 
      // new cart details in cart collection
      const addNewCart = async () => {
         try {
-            await axios.post(`/api/cart/add`,{cart})
+            await axios.post(`/api/cart/add`,{products:cart, total, discount, shipping, tax, final})
                 .then(res => {
                     toast.success(res.data.msg)
+                    window.location.reload()
                 }).catch(err => toast.error(err.response.data.msg));
         } catch (err) {
             toast.error(err.message)
@@ -95,9 +116,9 @@ function CartProvider(props) {
     }
 
     // update cart details in cart collection
-    const updateCart = async () => {
+    const updateCart = async (id, data) => {
         try {
-            await axios.patch(`/api/cart/update/${currentUser._id}`,{cart})
+            await axios.patch(`/api/cart/update/${id}`,data)
                 .then(res => {
                     toast.success(res.data.msg)
                 }).catch(err => toast.error(err.response.data.msg));
