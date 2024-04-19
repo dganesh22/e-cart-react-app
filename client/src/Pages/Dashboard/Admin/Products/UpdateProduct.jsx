@@ -11,6 +11,7 @@ function UpdateProduct() {
     const [SKU,setSKU] = useState('')
     const [category,setCategory] = useState('')
     const [discount,setDiscount] = useState(0.0)
+    const [tax,setTax] = useState(0.0)
 
     const [loading,setLoading] = useState(false)
 
@@ -30,6 +31,7 @@ function UpdateProduct() {
                 setImage(res.data.product.image)
                 setDiscount(res.data.product.discount)
                 setSKU(res.data.product.SKU)
+                setTax(res.data.product.tax)
             }).catch(err => toast.error(err.response.data.msg))
     }
 
@@ -111,7 +113,8 @@ function UpdateProduct() {
                 price,
                 SKU,
                 discount,
-                image
+                image,
+                tax
             }
 
              await axios.patch(`/api/product/update/${params.id}`,data)
@@ -194,6 +197,10 @@ function UpdateProduct() {
                 <div className="form-group mt-2">
                     <label htmlFor="discount">Discount</label>
                     <input type="number" name="discount" value={discount} onChange={(e) => setDiscount(e.target.value)} id="discount" className="form-control" required />
+                </div>
+                <div className="form-group mt-2">
+                    <label htmlFor="tax">Tax</label>
+                    <input type="number" name="tax" value={tax} onChange={(e) => setTax(e.target.value)} id="tax" className="form-control" required />
                 </div>
                 <div className="form-group mt-2">
                     <button onClick={submitHandler} className="btn btn-success">Update Product</button>

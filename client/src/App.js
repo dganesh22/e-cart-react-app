@@ -20,6 +20,7 @@ import NewProduct from './Pages/Dashboard/Admin/Products/NewProduct'
 import ProductsHome from './Pages/Products/ProductsHome'
 import ProductDetails from './Pages/Products/ProductDetails'
 import UpdateProduct from './Pages/Dashboard/Admin/Products/UpdateProduct'
+import AdminHome from './Pages/Dashboard/Admin/AdminHome'
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
                    <Route path={`/dashboard`} element={<Dashboard/>}>
                       <Route path={`user`} element={<UserDashboard/>} />
                       <Route path={`superadmin`} element={<AdminDashboard/>}>
+                          <Route path={``} element={<AdminHome/>} />
                           <Route path={`products`} element={<AdminProducts/>} />
                           <Route path={`products/new`} element={<NewProduct/>} />
                           <Route path={`products/update/:id`} element={<UpdateProduct/>} />

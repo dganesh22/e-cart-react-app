@@ -15,7 +15,19 @@ function AdminProducts() {
 
   useEffect(() => {
     readAllProducts()
-  }, [])
+  }, [products])
+
+  // to delete products
+const deleteHandler = async (id) => {
+    if(window.confirm(`Are you sure you want to delete Product ${id}?`)) {
+      await axios.delete(`/api/product/delete/${id}`)
+        .then(res => {
+            toast.success(res.data.msg)
+        }).catch(err => toast.error(err.response.data.msg))
+    }
+}
+
+
 
   return (
     <div className='container'>
@@ -56,7 +68,7 @@ function AdminProducts() {
                           <NavLink to={`update/${item._id}`} className="btn btn-sm btn-info me-3">
                             <i className="bi bi-pencil"></i>
                           </NavLink>
-                          <button className="btn btn-sm btn-danger">
+                          <button onClick={() => deleteHandler(item._id)} className="btn btn-sm btn-danger">
                             <i className="bi bi-trash"></i>
                           </button>
                         </td>

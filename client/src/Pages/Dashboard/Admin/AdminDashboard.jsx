@@ -5,7 +5,7 @@ function AdminDashboard() {
   return (
       <section className='container-fluid'>
           <div className="row">
-              <div className="col-sm-12 col-md-4 col-lg-3 d-lg-block d-md-block d-sm-none">
+              <div className="col-sm-12 col-md-3 col-lg-2 d-lg-block d-md-block d-sm-none">
                   <div className="card border-0 show" tabIndex={'-1'}>
                     <div className="card-body">
                       <h3 className="text-dark">E-shop</h3>
@@ -40,7 +40,7 @@ function AdminDashboard() {
                   </div>
               </div>
 
-              <div className="col-sm-12 col-md-8 col-lg-9">
+              <div className="col-sm-12 col-md-9 col-lg-10">
                   <div className="container">
                           <div className="row">
                               <div className="col-md-12 col-sm-12 col-lg-12">

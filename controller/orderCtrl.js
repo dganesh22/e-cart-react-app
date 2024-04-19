@@ -36,7 +36,7 @@ const allOrder = async (req,res) => {
             // filtering orders w.r.to current user id
         let data = await orderData.filter(item => item.userId == id)
 
-        return res.status(StatusCodes.OK).json({ status: true, length: data.length, order: data })
+        return res.status(StatusCodes.OK).json({ status: true, length: data.length, orders: data })
     } catch (err) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ status: false, msg: err.message })
     }
