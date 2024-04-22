@@ -13,6 +13,16 @@ function Menu() {
 
     const navigate = useNavigate()
 
+    // check out handler
+    const checkOutHandler = async () => {
+        if(contextToken.token) {
+            navigate(`/checkout`)
+        } else {
+            toast.warning(`Need to Login,before checkout`)
+            navigate(`/login`)
+        }
+    }
+
 
 
     const logout = async () => {
@@ -38,7 +48,7 @@ function Menu() {
                    <div className='d-flex align-items-center'>
                         <button className="btn btn-secondary" data-bs-target="#menu" data-bs-toggle="offcanvas">
                             <i className="bi bi-list"></i>
-                        </button>
+                        </button> 
                         <NavLink to={`/`} className="navbar-brand ms-3">MERN-Project</NavLink>
                    </div>
 
@@ -191,7 +201,7 @@ function Menu() {
                                 </ul>
                                 </div>
                                 <div className="card-footer">
-                                    <NavLink className="btn btn-theme float-end">Checkout</NavLink>
+                                    <button onClick={checkOutHandler} className="btn btn-dark float-end">Checkout</button>
                                 </div>
                             </div>
                         )

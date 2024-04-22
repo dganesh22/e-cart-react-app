@@ -21,6 +21,7 @@ import ProductsHome from './Pages/Products/ProductsHome'
 import ProductDetails from './Pages/Products/ProductDetails'
 import UpdateProduct from './Pages/Dashboard/Admin/Products/UpdateProduct'
 import AdminHome from './Pages/Dashboard/Admin/AdminHome'
+import Checkout from './Pages/Products/Checkout'
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
           <ToastContainer autoClose={4000} position={'top-right'} />  
           <Routes>
             <Route element={<PrivateRoute/>}>
+                <Route path={`checkout`} element={<Checkout/>} />
                    <Route path={`/dashboard`} element={<Dashboard/>}>
                       <Route path={`user`} element={<UserDashboard/>} />
                       <Route path={`superadmin`} element={<AdminDashboard/>}>
