@@ -7,7 +7,7 @@ import useCart from '../Hooks/cartHook'
 
 function Menu() {
     const { contextToken, setToken,setCurrentUser,setLogin } = useAuth()
-    const {cart, total, tax,discount,final,shipping, removeFromCart, increment,decrement } = useCart()
+    const {cart, total, tax,discount,final,shipping, removeFromCart, increment,decrement, storeCart } = useCart()
 
     const [coupon,setCoupon] = useState('')
 
@@ -16,6 +16,7 @@ function Menu() {
     // check out handler
     const checkOutHandler = async () => {
         if(contextToken.token) {
+            storeCart()
             navigate(`/checkout`)
         } else {
             toast.warning(`Need to Login,before checkout`)

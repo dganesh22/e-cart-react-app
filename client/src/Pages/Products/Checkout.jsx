@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../Hooks/authHook'
 import useCart from '../../Hooks/cartHook'
 import { NavLink } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 export default function Checkout() {
     const [view,setView] = useState("address")
+    const [payMode,setPayMode] = useState("cod")
+
     const { contextToken }= useAuth()
     const { cart, total, tax,discount,final,shipping  } = useCart()
     const [coupon,setCoupon] = useState('')
@@ -14,8 +18,7 @@ export default function Checkout() {
         name: "",
         email: "",
         mobile: "",
-        address: "",
-        landmark: ""
+        address: ""
     })
 
     const toggle = (val) => {
@@ -28,7 +31,6 @@ export default function Checkout() {
             email: "",
             mobile: "",
             address: "",
-            landmark: ""
         })
     },[])
 
@@ -36,6 +38,24 @@ export default function Checkout() {
     const readInput = (e) => {
         const { name, value } = e.target
         setUser({...user, [name]: value})
+    }
+
+    // address handler
+    const addressHandler = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.patch(`/api/user/update/${contextToken.currentUser._id}`, {
+                name: user.name,
+                email: user.email,
+                mobile: user.mobile,
+                address: [user.address],
+            })
+                .then(res => {
+                    toast.success(res.data.msg)
+                }).catch(err => toast.error(err.response.data.msg))
+        } catch (err) {
+            toast.error(err.message)
+        }
     }
 
 
@@ -79,7 +99,7 @@ export default function Checkout() {
                             <h3 className="text-theme">Shipping Address</h3>
                         </div>
                         <div className="card-body">
-                            <form autoComplete="off">
+                            <form autoComplete="off" onSubmit={addressHandler}>
                                 <div className="form-group mt-2">
                                     <label htmlFor="name">Name</label>
                                     <input type="text" name="name" value={user.name} onChange={readInput} id="name" className="form-control" required />
@@ -111,7 +131,14 @@ export default function Checkout() {
                                 <h3 className="text-theme">Payment</h3>
                             </div>
                             <div className="card-body">
-
+                                <ul className="nav nav-pills">
+                                    <li className="nav-item">
+                                        <button onClick={() => setPayMode("cod")} className={ payMode === "cod" ? "nav-link active": "nav-link"}>Cash On Delivery</button>
+                                    </li>
+                                    <li className="nav-item">
+                                        <button onClick={() => setPayMode("online")} className={ payMode === "online" ? "nav-link active": "nav-link"}>Online</button>
+                                    </li>
+                                </ul>
                             </div>
                     </div>
                     ) : null
@@ -123,7 +150,36 @@ export default function Checkout() {
                                 <h3 className="text-theme">Review</h3>
                             </div>
                             <div className="card-body">
-                            
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <ul className="list-group">
+                                            <li className="list-group-item">
+                                                <strong>Name</strong>
+                                                <span className="text-success"> { contextToken?.currentUser.name } </span>
+                                            </li>
+                                            <li className="list-group-item">
+                                                <strong>Email</strong>
+                                                <span className="text-success"> { contextToken?.currentUser.email } </span>
+                                            </li>
+                                            <li className="list-group-item">
+                                                <strong>Mobile</strong>
+                                                <span className="text-success"> { contextToken?.currentUser.mobile } </span>
+                                            </li>
+                                            <li className="list-group-item">
+                                                <strong>Address</strong>
+                                                <span className="text-success"> { contextToken?.currentUser.address[0] } </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <ul className="list-group">
+                                            <li className="list-group-item">
+                                                <strong>Payment Mode</strong>
+                                                <span className="text-success"> { payMode === "cod"? "Cash On Delivery" : payMode } </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                     </div>
                     ) : null

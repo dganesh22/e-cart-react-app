@@ -42,6 +42,14 @@ function CartProvider(props) {
     },[cart,discount])
 
     useEffect(() => {
+        let ta = cart.reduce((acc,item) => {
+            return(( acc + item.price * item.quantity) * (item.tax/100))
+        }, 0)
+        setTax(ta)
+        localStorage.setItem('tax', ta)
+    },[cart,tax])
+
+    useEffect(() => {
         let finalTotal = (total + tax + shipping) - discount 
         setFinal(finalTotal)
         localStorage.setItem('final', finalTotal)
@@ -127,9 +135,36 @@ function CartProvider(props) {
         }
     }
 
+    const storeCart = async () => {
+        try {
+            let res = await axios.get(`/api/cart/all`)
+            let extCart = res.data.carts.find((item) => item.user._id == contextToken.currentUser._id)
+            
+                if(!extCart) {
+                    addNewCart({ 
+                        products: cart,
+                        shipping,
+                        tax,
+                        discount,
+                        final
+                    })
+                } else {
+                    updateCart(extCart._id, {
+                        products: cart,
+                        shipping,
+                        tax,
+                        discount,
+                        final
+                    })
+                }
+        } catch (err) {
+            toast.error(err.message)
+        }
+    }
+
 
   return (
-    <CartContext.Provider value={{ cart, total,tax,discount,final,shipping, addToCart, removeFromCart, increment, decrement }}>
+    <CartContext.Provider value={{ cart, total,tax,discount,final,shipping, addToCart, removeFromCart, increment, decrement, storeCart }}>
         {
             props.children
         }
