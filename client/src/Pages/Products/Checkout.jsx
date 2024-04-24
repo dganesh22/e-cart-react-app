@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '../../Hooks/authHook'
 import useCart from '../../Hooks/cartHook'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 
@@ -10,9 +10,12 @@ export default function Checkout() {
     const [payMode,setPayMode] = useState("cod")
 
     const { contextToken }= useAuth()
-    const { cart, total, tax,discount,final,shipping  } = useCart()
+   
     const [coupon,setCoupon] = useState('')
+    const [cartData,setCartData] = useState('')
 
+    const navigate = useNavigate()
+    
 
     const [user,setUser] = useState({
         name: "",
@@ -20,6 +23,31 @@ export default function Checkout() {
         mobile: "",
         address: ""
     })
+
+
+        //read cart
+        let readCart = async () => {
+            await axios.get(`/api/cart/all`)
+                .then(res => {
+                        let ca = res.data.carts.find(item => item.user._id == contextToken.currentUser._id)
+                        console.log(`single cart =`, ca)
+                        setCartData(ca)
+                        setUser({
+                            name: ca.user.name,
+                            email: ca.user.email,
+                            mobile: ca.user.mobile,
+                            address: ca.user.address
+                        })
+                }).catch(err => toast.error(err.message))
+        }
+
+        const InitCart = useCallback(() => {
+            readCart()
+        },[cartData])
+    
+        useEffect(() => {
+            InitCart()
+        },[InitCart])
 
     const toggle = (val) => {
         setView(val)
@@ -32,7 +60,7 @@ export default function Checkout() {
             mobile: "",
             address: "",
         })
-    },[])
+    },[contextToken])
 
 
     const readInput = (e) => {
@@ -48,12 +76,43 @@ export default function Checkout() {
                 name: user.name,
                 email: user.email,
                 mobile: user.mobile,
-                address: [user.address],
+                address: user.address,
             })
                 .then(res => {
                     toast.success(res.data.msg)
                 }).catch(err => toast.error(err.response.data.msg))
         } catch (err) {
+            toast.error(err.message)
+        }
+    }
+
+    // place order
+    const placeOrder = async () => {
+        try {
+            if(window.confirm(`Are you sure to place order?`)) {
+                let data = {
+                    cart: cartData,
+                    user: contextToken.currentUser
+                }
+                await axios.post(`/api/order/add`, data)
+                    .then(res => {
+                        toast.success(res.data.msg)
+                        deleteCart(cartData._id)
+                    }).catch(err => toast.error(err.response.data.msg))
+            }
+        }catch(err) {
+            toast.error(err.message)
+        }
+    }
+
+    const deleteCart = async (id) => {
+        try {
+            await axios.delete(`/api/cart/delete/${id}`)
+                .then(res => {
+                    toast.success(res.data.msg)
+                    navigate("/dashboard/user")
+                }).catch(err => toast.error(err.response.data.msg))
+        }catch(err) {
             toast.error(err.message)
         }
     }
@@ -167,7 +226,7 @@ export default function Checkout() {
                                             </li>
                                             <li className="list-group-item">
                                                 <strong>Address</strong>
-                                                <span className="text-success"> { contextToken?.currentUser.address[0] } </span>
+                                                <span className="text-success"> { contextToken?.currentUser.address } </span>
                                             </li>
                                         </ul>
                                     </div>
@@ -194,7 +253,7 @@ export default function Checkout() {
                     <div className="card-body">
 
                  {
-                        cart.length === 0 ? null : (
+                        cartData?.products?.length === 0 ? null : (
                             <div className="card w-100 border-0 ms-0">
                                 <div className="card-header border-0">
                                 <h5 className="card-title text-theme">Cart-Total</h5>
@@ -225,31 +284,31 @@ export default function Checkout() {
                                     <li className="list-group">
                                         <div>
                                             <strong className="text-secondary">SubTotal</strong>
-                                                <strong className="float-end text-success"> &#8377; { total ? total.toFixed(2): 0 } </strong>
+                                                <strong className="float-end text-success"> &#8377; { cartData?.total ? cartData?.total.toFixed(2): 0 } </strong>
                                         </div>
                                         <div>
                                             <strong className="text-secondary">Shipping</strong>
-                                                <strong className="float-end text-success"> &#8377; { shipping ? shipping.toFixed(2): 0 } </strong>
+                                                <strong className="float-end text-success"> &#8377; { cartData?.shipping ? cartData?.shipping.toFixed(2): 0 } </strong>
                                         </div>
                                         <div>
                                             <strong className="text-secondary">Tax (CGST+SGST) </strong>
-                                                <strong className="float-end text-success"> &#8377; { tax ? tax.toFixed(2): 0 } </strong>
+                                                <strong className="float-end text-success"> &#8377; { cartData?.tax ? cartData?.tax.toFixed(2): 0 } </strong>
                                         </div>
                                         <div>
                                             <strong className="text-secondary">Discount </strong>
-                                                <strong className="float-end text-danger"> &#8377; { discount ? discount.toFixed(2): 0 } </strong>
+                                                <strong className="float-end text-danger"> &#8377; { cartData?.discount ? cartData?.discount.toFixed(2): 0 } </strong>
                                         </div>
                                         <hr />
                                         <div>
                                             <strong className="text-theme">Total</strong>
-                                                <strong className="float-end text-theme"> &#8377; { final ? final.toFixed(2): 0 } </strong>
+                                                <strong className="float-end text-theme"> &#8377; { cartData?.final ? cartData?.final.toFixed(2): 0 } </strong>
                                         </div>
                                     </li>
                                 </ul>
                                 </div>
                                 <div className="card-footer">
                                     {
-                                        view === "review" ?  <button className="btn btn-dark float-end">Place Order</button>: null
+                                        view === "review" ?  <button onClick={() => placeOrder()} className="btn btn-dark float-end">Place Order</button>: null
                                     }
                                 </div>
                             </div>

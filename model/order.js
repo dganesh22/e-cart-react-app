@@ -3,7 +3,14 @@ const Cart = require('./cart')
 const User = require('./user')
 
 const OrderSchema = new mongoose.Schema({
-    
+    cart: {
+        type: Object,
+        default: {}
+    },
+    user: {
+        type: Object,
+        default: {}
+    },
     paymentId: {
         type: String,
         trim: true

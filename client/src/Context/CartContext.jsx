@@ -17,6 +17,8 @@ function CartProvider(props) {
     const [total, setTotal] = useState(localStorage.getItem("total")? Number(localStorage.getItem("total")):0);
 
 
+
+
     useEffect(() => {
         let totalAmount = cart.reduce((acc,item) => {
             return acc + item.price * item.quantity
@@ -146,25 +148,38 @@ function CartProvider(props) {
                         shipping,
                         tax,
                         discount,
-                        final
+                        final,
+                        total
                     })
+                    clearStorage()
                 } else {
                     updateCart(extCart._id, {
                         products: cart,
                         shipping,
                         tax,
                         discount,
-                        final
+                        final,
+                        total
                     })
+                    clearStorage()
                 }
         } catch (err) {
             toast.error(err.message)
         }
     }
 
+    const clearStorage = () => {
+        localStorage.removeItem("cart")
+        localStorage.removeItem("tax")
+        localStorage.removeItem("shipping")
+        localStorage.removeItem("discount")
+        localStorage.removeItem("total")
+        localStorage.removeItem("final")
+    }
+
 
   return (
-    <CartContext.Provider value={{ cart, total,tax,discount,final,shipping, addToCart, removeFromCart, increment, decrement, storeCart }}>
+    <CartContext.Provider value={{ cart, total,tax,discount,final,shipping, addToCart, removeFromCart, increment, decrement, storeCart, setCart, setDiscount, setTotal, setFinal, setTax, setShipping }}>
         {
             props.children
         }

@@ -42,12 +42,10 @@ const UserSchema = new mongoose.Schema({
             default: "none"
         }
     ],
-    address: [
-        {
-            type: Object,
-            default: {}
-        }
-    ],
+    address: {
+            type: String,
+            default: ""
+        },
     isBlocked: {
         type: Boolean,
         default: false
