@@ -36,8 +36,15 @@ const createCart = async (req,res) => {
 const allCart = async (req,res) => {
     try {
         let data = await Cart.find({})
+        let userId = req.query.userId
 
-        return res.status(StatusCodes.OK).json({ status: true, length: data.length, carts: data})
+        if(userId) {
+            let cartData = await data.filter(item => item.user._id == userId)
+            return res.status(StatusCodes.OK).json({ status: true, length: cartData.length, carts: cartData})
+        } else {
+            return res.status(StatusCodes.OK).json({ status: true, length: data.length, carts: data})
+        }
+       
     } catch (err) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ status: false, msg: err.message })
     }
